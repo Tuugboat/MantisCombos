@@ -7,6 +7,7 @@ import ast
 
 #Initialize the speech engine
 SpeechEngine = pyttsx3.init()
+UpdateStat = MC_Lib.UpdateCombos()
 
 #------------------------------- Preferences --------------------------------------
 #The following preferences are accepted
@@ -29,15 +30,12 @@ if Prefs["ComboPath"] != 0:
 else:
 	Combos = MC_Lib.GetCombos()
 
-Speed = Prefs["ComboSpeed"]
+CustomSpeed = Prefs["ComboSpeed"]
+TextSize = Prefs["TextSize"]
 
 del(Prefs)
 #------------------------------- Preferences --------------------------------------
-IterMax = 5
-i=0
-while i < IterMax:
-	Selection = randint(0, len(Combos)-1)
-	SpeechEngine.say(Combos[Selection][0])
-	SpeechEngine.runAndWait()
-	sleep(Combos[Selection][1]*Speed)
-	i+=1
+
+#Start Going
+app = MC_Lib.AppWindow(UpdateStatus=UpdateStat, TTSEngine = SpeechEngine, ComboList = Combos, ComboTextSize=TextSize, Speed = CustomSpeed)
+app.mainloop()
