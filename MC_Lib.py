@@ -8,7 +8,7 @@ import ast
 
 #Easy-to-access important variables
 DefURL = "https://raw.githubusercontent.com/Tuugboat/MantisCombos/main/Combos.csv" #URL to querry for the updated combo list
-Version = "1.0"
+Version = "0.1"
 
 #Dealing with the ComboList and ensureing that it is always up to date
 def GetCombos(FilePath = "./Combos.csv", header = True):
