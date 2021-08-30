@@ -7,7 +7,7 @@ import pyttsx3
 DefURL = "https://raw.githubusercontent.com/Tuugboat/MantisCombos/main/Combos.csv" #URL to querry for the updated combo list
 Version = "0.1"
 
-#Dealing with the ComboList and ensureing that it is always up to date
+#Dealing with the ComboList and ensuring that it is always up to date
 def GetCombos(FilePath = "./Combos.csv", header = True):
 	#FilePath should direct to a csv file with two columns, the first should be the text to read out the combos and the second should be the wait times for that respective combo.
 	Combos = []
@@ -62,21 +62,22 @@ def RunCombos(SpeechEngine, ComboList, speed, label, flag):
 
 
 
-#-----------------------------GUI-----------------------------------------
+#----------------------------- Central Application-----------------------------------------
 class AppWindow(tk.Tk):
-	def __init__(self, UpdateStatus="Update status missing", TTSEngine = pyttsx3.init(), ComboList = [["hop", 0.5], ["skip", 0.5]], ComboTextSize = 100, Speed = 1):
+	def __init__(self, UpdateStatus="Update status missing", TTSEngine = pyttsx3.init(), ComboList = [["hop", 0.5], ["skip", 0.5]], ComboTextSize = 100, Speed = 1)
 		tk.Tk.__init__(self)
 		self._frame = None
 		self.UpdateStatus = UpdateStatus
+
 		#Sets the variables required by the component windows
-		self.flag = threading.Event()
+		self.flag = threading.Event() #Flag. This is very important to stop the async running of RunCombos()
 		self.TTSEngine = TTSEngine
 		self.ComboList = ComboList
-		self.ComboTextSize = ComboTextSize
-		self.CustomSpeed = Speed
+		self.ComboTextSize = ComboTextSize #Implemented in RunCombos()
+		self.CustomSpeed = Speed #Implemented in RunCombos()
 		
 		#Opens the StartPage frame first
-		self.SwitchFrame(StartPage) #Set the start page
+		self.SwitchFrame(StartPage)
 
 	def SwitchFrame(self, FrameClass):
 		#Destroy the current frame, replace with new one. This may cause a memory leak and, as such, should not be used millions of times without restarting the program
@@ -129,15 +130,15 @@ class RunningPage(tk.Frame):
 		self.current = tk.Label(self, text="Waiting", font=("Arial", master.ComboTextSize), padx = master.ComboTextSize/2, pady = master.ComboTextSize/2)
 		self.current.pack(side="top", fill="x", pady=10)
 		
+		#Start, stop, pause; all functionality is defined below
 		tk.Button(self, text="Quit", bg="#930002",
 			command= lambda: self.QuitCombos()).pack(side="bottom")
 		tk.Button(self, text="Pause", bg="#f5c242",
 			command= lambda: self.PauseCombos()).pack(side="bottom")
-		
 		tk.Button(self, text="Start Combos", bg="#51ae2a",
-			command= lambda: self.InitiateCombos()).pack()
+			command= lambda: self.StartCombos()).pack()
 
-	def InitiateCombos(self):
+	def StartCombos(self):
 		#Starts the above-defined function to run asynchronously
 		self.master.flag.set()
 		thr = threading.Thread(target=RunCombos, args=(self.master.TTSEngine, self.master.ComboList, self.master.CustomSpeed, self.current, self.master.flag))
