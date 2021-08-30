@@ -1,10 +1,7 @@
-import csv, os, requests
+import csv, os, requests, time, threading, ast
 import tkinter as tk
 from random import randint
-import time
-import threading
 import pyttsx3
-import ast
 
 #Easy-to-access important variables
 DefURL = "https://raw.githubusercontent.com/Tuugboat/MantisCombos/main/Combos.csv" #URL to querry for the updated combo list
@@ -51,12 +48,16 @@ def RunCombos(SpeechEngine, ComboList, speed, label, flag):
 	while flag.is_set():
 		Selection = randint(0, len(ComboList)-1) #Randomly select an index
 		
-		ToText = ComboList[Selection][0].upper().replace(" ", "\n") #Config the string to the required format for showing in the window
+		ToText = ComboList[Selection][0].upper().replace(",", "\n") #Config the string to the required format for showing in the window
 		label.configure(text=ToText) #Configures the passed-through label
 		
 		#Speak and wait the combo/wait time, adjusted for speed
 		SpeechEngine.say(ComboList[Selection][0])
-		SpeechEngine.runAndWait()
+		try:
+			SpeechEngine.runAndWait()
+		except:
+			print()
+
 		time.sleep(ComboList[Selection][1]/(max(speed, 0.1)))
 
 
@@ -130,6 +131,8 @@ class RunningPage(tk.Frame):
 		
 		tk.Button(self, text="Quit", bg="#930002",
 			command= lambda: self.QuitCombos()).pack(side="bottom")
+		tk.Button(self, text="Pause", bg="#f5c242",
+			command= lambda: self.PauseCombos()).pack(side="bottom")
 		
 		tk.Button(self, text="Start Combos", bg="#51ae2a",
 			command= lambda: self.InitiateCombos()).pack()
@@ -144,6 +147,10 @@ class RunningPage(tk.Frame):
 		#Simple way to stop the async function
 		self.master.flag.clear()
 		self.master.SwitchFrame(StartPage)
+	
+	def PauseCombos(self):
+		#Pauses the combos
+		self.master.flag.clear()
 
 
 #Debug
